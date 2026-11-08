@@ -1,0 +1,58 @@
+
+Running pod install...                                           1,372ms
+Running Xcode build...                                          
+Xcode build done.                                           408.3s
+::group::✅ app starts, screens open and native channels answer
+SMOKE onboarding shown, route=home
+SMOKE route progress errors=0
+SMOKE back from progress handled=true now=home
+SMOKE route exercises errors=0
+SMOKE back from exercises handled=true now=home
+SMOKE route settings errors=0
+SMOKE back from settings handled=true now=home
+SMOKE route preferences errors=0
+SMOKE back from preferences handled=true now=home
+SMOKE route tools errors=0
+SMOKE back from tools handled=true now=home
+SMOKE route routines errors=0
+SMOKE back from routines handled=true now=home
+SMOKE route measures errors=0
+SMOKE back from measures handled=true now=home
+SMOKE route places errors=0
+SMOKE back from places handled=true now=home
+SMOKE route passes errors=0
+SMOKE back from passes handled=true now=home
+SMOKE route timeline errors=0
+SMOKE back from timeline handled=true now=home
+SMOKE route compare errors=0
+SMOKE back from compare handled=true now=home
+SMOKE route notes errors=0
+SMOKE back from notes handled=true now=home
+SMOKE route nutrition errors=0
+SMOKE back from nutrition handled=true now=home
+SMOKE route moments errors=0
+SMOKE back from moments handled=true now=home
+SMOKE route awards errors=0
+SMOKE back from awards handled=true now=home
+SMOKE route about errors=0
+SMOKE back from about handled=true now=home
+SMOKE route ai-plan errors=0
+SMOKE back from ai-plan handled=true now=home
+SMOKE route health errors=0
+SMOKE back from health handled=true now=home
+SMOKE native gymmane/screen/keepOn -> null
+SMOKE native gymmane/screen/keepOn -> null
+SMOKE native gymmane/screen/bright -> null
+SMOKE native gymmane/screen/bright -> null
+SMOKE native gymmane/screen/dim -> null
+SMOKE native gymmane/screen/dim -> null
+SMOKE native gymmane/haptics/buzz -> null
+SMOKE native gymmane/voice/check -> ok
+SMOKE native gymmane/voice/say -> true
+SMOKE native gymmane/voice/stop -> true
+SMOKE native gymmane/gallery/savePng -> true
+SMOKE notification sound installed=true
+SMOKE errors=0
+::endgroup::
+
+🎉 1 test passed.
