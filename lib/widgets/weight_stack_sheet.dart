@@ -91,6 +91,7 @@ class _WeightStackSheetState extends State<_WeightStackSheet> {
               controller: c,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               cursorColor: gc.accent,
+              onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
               style: AppTheme.f(16, weight: FontWeight.w800, color: gc.text),
               decoration: InputDecoration(
                 isDense: true,

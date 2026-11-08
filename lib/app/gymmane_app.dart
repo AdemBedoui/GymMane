@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -80,7 +81,7 @@ class _ButtonNavScrim extends StatelessWidget {
     return Stack(
       children: [
         child,
-        if (buttons && bar > 0)
+        if (buttons && bar > 0 && defaultTargetPlatform == TargetPlatform.android)
           Positioned(
             left: 0,
             right: 0,

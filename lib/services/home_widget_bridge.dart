@@ -27,7 +27,7 @@ class HomeWidgetBridge {
   static const themeKey = 'widget_theme';
   static const bodyDays = 7;
   static bool get _ios => !kIsWeb && Platform.isIOS;
-  static bool get _supported => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+  static bool get _supported => !kIsWeb && Platform.isAndroid;
   static bool _groupReady = false;
   static Timer? _debounce;
   static Future<void>? _job;

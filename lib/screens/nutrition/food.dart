@@ -1495,6 +1495,7 @@ class _NumberField extends StatelessWidget {
               controller: controller,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
+              onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
               style: AppTheme.f(19, weight: FontWeight.w800, color: gc.text),
               cursorColor: color,
               decoration: InputDecoration(

@@ -1,0 +1,18 @@
+name: gymmane_ios
+description: iOS implementations of GymMane's native channels.
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: ^3.11.5
+  flutter: ">=3.38.4"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      ios:
+        pluginClass: GymManeIosPlugin

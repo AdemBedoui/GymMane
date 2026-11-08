@@ -463,6 +463,7 @@ class SettingsScreen extends StatelessWidget {
                       hint: t.trainReminderRowHint,
                     ),
                   ),
+                  if (Platform.isAndroid)
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () => showAppSheet<void>(
@@ -757,7 +758,7 @@ class SettingsScreen extends StatelessWidget {
       ]),
       _Category('alerts', PhosphorIconsRegular.bellSimple, _sectionTitle('alerts'), [
         (t.trainReminder, PhosphorIconsRegular.bellSimple),
-        (t.notifSoundSetting, PhosphorIconsRegular.musicNotes),
+        if (Platform.isAndroid) (t.notifSoundSetting, PhosphorIconsRegular.musicNotes),
         (t.alarmSound, PhosphorIconsRegular.speakerHigh),
         (t.alarmStyleTitle, PhosphorIconsRegular.vibrate),
         (t.toastSoundSetting, PhosphorIconsRegular.bellSimple),
@@ -772,7 +773,7 @@ class SettingsScreen extends StatelessWidget {
         (t.gamificationSetting, PhosphorIconsRegular.medal),
         (t.gymPass, PhosphorIconsRegular.qrCode),
       ]),
-      if (Platform.isAndroid || Platform.isIOS)
+      if (Platform.isAndroid)
         _Category('widgets', PhosphorIconsRegular.squaresFour, _sectionTitle('widgets'), [
           (t.addActivityWidget, PhosphorIconsRegular.squaresFour),
           (t.addStatsWidget, PhosphorIconsRegular.chartBar),

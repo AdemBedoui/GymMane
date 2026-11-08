@@ -1,0 +1,79 @@
+# Runs the unit tests and a smoke test of the real app on an iPhone simulator.
+name: Verify iOS
+
+on:
+  push:
+    branches: [ios-build]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: '3.41.9'
+
+jobs:
+  verify:
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: Analyze and unit test
+        continue-on-error: true
+        run: |
+          flutter pub get
+          mkdir -p ios-results
+          set -o pipefail
+          flutter analyze --no-fatal-infos --no-fatal-warnings 2>&1 | tee ios-results/analyze.txt
+          flutter test --reporter compact 2>&1 | tail -60 | tee ios-results/unit.txt
+      - name: Prepare the iOS project
+        run: tool/ios_prepare.sh
+      - name: Boot an iPhone simulator
+        run: |
+          id=$(xcrun simctl list devices available -j | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)['devices']
+          r=[k for k in d if 'iOS' in k]
+          r.sort(key=lambda k:[int(x) for x in k.split('iOS-')[1].split('-')])
+          print([x for x in d[r[-1]] if x['name'].startswith('iPhone')][-1]['udid'])")
+          echo "SIM=$id" >> "$GITHUB_ENV"
+          xcrun simctl boot "$id"
+          xcrun simctl bootstatus "$id"
+          xcrun simctl privacy "$id" grant photos-add com.gymmane.gymmane || true
+      - name: Run the smoke test
+        id: smoke
+        continue-on-error: true
+        run: |
+          mkdir -p ios-results/shots
+          ( i=100; while true; do xcrun simctl io "$SIM" screenshot "ios-results/shots/$i.png" >/dev/null 2>&1 || true; i=$((i+1)); sleep 4; done ) &
+          shooter=$!
+          set -o pipefail
+          flutter test integration_test/ios_smoke_test.dart -d "$SIM" 2>&1 | tee ios-results/smoke.txt
+          status=$?
+          kill $shooter || true
+          exit $status
+      - name: Crash reports
+        if: always()
+        run: |
+          mkdir -p ios-results/crashes
+          cp ~/Library/Logs/DiagnosticReports/Runner* ios-results/crashes/ 2>/dev/null || true
+          for f in ios-results/shots/*.png; do sips -Z 700 "$f" >/dev/null 2>&1 || true; done
+      - name: Publish results to a branch
+        if: always()
+        run: |
+          echo "${{ steps.smoke.outcome }}" > ios-results/outcome.txt
+          cp -R ios-results /tmp/ios-results
+          git config user.name github-actions
+          git config user.email github-actions@users.noreply.github.com
+          git checkout --orphan ios-test-results
+          git rm -rfq --cached .
+          git clean -fdxq -e .git
+          cp -R /tmp/ios-results/. .
+          git add -A
+          git commit -qm "iOS test results"
+          git push -f origin ios-test-results

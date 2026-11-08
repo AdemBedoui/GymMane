@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderRepaintBoundary;
 import 'package:flutter/services.dart';
@@ -463,6 +464,22 @@ class _AppShellState extends State<AppShell> with WidgetsBindingObserver, Single
                       key: ValueKey(_celebrating),
                       id: _celebrating!,
                       onClose: _closeCelebration,
+                    ),
+                  ),
+                if (defaultTargetPlatform == TargetPlatform.iOS &&
+                    fit.route != 'home' &&
+                    !fit.isSessionActive &&
+                    !fit.isSessionComplete)
+                  Positioned(
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: 20,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onHorizontalDragEnd: (d) {
+                        if ((d.primaryVelocity ?? 0) > 120) Navigator.of(context).maybePop();
+                      },
                     ),
                   ),
               ],

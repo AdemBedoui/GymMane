@@ -20,7 +20,7 @@ class LiveWorkout {
   static int _flashes = 0;
   static DateTime? _flashAt;
 
-  static bool get _supported => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+  static bool get _supported => !kIsWeb && Platform.isAndroid;
 
   static Future<void> sync() async {
     if (!_supported) return;

@@ -30,9 +30,13 @@ dependencies:
   barcode: ^2.2.9
   zxing2: ^0.2.4
   app_settings: ^8.0.3
+  gymmane_ios:
+    path: packages/gymmane_ios
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.14.1
