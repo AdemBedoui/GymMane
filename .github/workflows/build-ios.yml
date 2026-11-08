@@ -29,6 +29,7 @@ jobs:
 
       - name: Generate the iOS project
         run: |
+          flutter config --enable-swift-package-manager
           flutter create --platforms=ios --org com.gymmane --project-name gymmane .
           flutter pub get
 
