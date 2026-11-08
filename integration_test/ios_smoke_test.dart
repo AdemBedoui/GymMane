@@ -23,6 +23,13 @@ Future<void> wait(WidgetTester tester, int seconds) async {
   await tester.pump(const Duration(milliseconds: 100));
 }
 
+Future<void> dismissAward(WidgetTester tester) async {
+  final button = find.text('Awesome!');
+  if (button.evaluate().isEmpty) return;
+  await tester.tap(button.first, warnIfMissed: false);
+  await wait(tester, 2);
+}
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -36,9 +43,12 @@ void main() {
     debugPrint('SMOKE onboarding shown, route=${fit.route}');
 
     fit.completeOnboarding();
-    await wait(tester, 6);
+    await wait(tester, 10);
+    await dismissAward(tester);
+    await wait(tester, 5);
 
     for (final route in _routes) {
+      await dismissAward(tester);
       final before = errors.length;
       fit.pushRoute(route);
       await wait(tester, 5);
