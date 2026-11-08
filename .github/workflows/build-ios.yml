@@ -1,0 +1,72 @@
+# Builds an unsigned GymMane .ipa on GitHub's Mac servers.
+# Run it from the Actions tab, then sign and install the .ipa with Sideloadly.
+name: Build iOS (unsigned)
+
+on:
+  push:
+    branches: [ios-build]
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: '3.41.9'
+  IOS_TARGET: '15.0'
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Generate the iOS project
+        run: |
+          flutter create --platforms=ios --org com.gymmane --project-name gymmane .
+          flutter pub get
+
+      - name: Set the minimum iOS version
+        run: |
+          sed -i '' -E "s/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]+;/IPHONEOS_DEPLOYMENT_TARGET = ${IOS_TARGET};/g" ios/Runner.xcodeproj/project.pbxproj
+          if [ -f ios/Podfile ]; then
+            sed -i '' -E "s/^#? *platform :ios.*/platform :ios, '${IOS_TARGET}'/" ios/Podfile
+          fi
+
+      - name: Add privacy descriptions and the display name
+        run: |
+          plist=ios/Runner/Info.plist
+          set_key() {
+            /usr/libexec/PlistBuddy -c "Delete :$1" "$plist" 2>/dev/null || true
+            /usr/libexec/PlistBuddy -c "Add :$1 string $2" "$plist"
+          }
+          set_key NSPhotoLibraryUsageDescription "GymMane uses your photos for progress pictures."
+          set_key NSPhotoLibraryAddUsageDescription "GymMane saves images you create to your photos."
+          set_key NSCameraUsageDescription "GymMane uses the camera for progress pictures and barcodes."
+          set_key NSMicrophoneUsageDescription "GymMane needs the microphone when you record video."
+          set_key CFBundleDisplayName "GymMane"
+
+      - name: Generate app icons
+        run: dart run flutter_launcher_icons
+
+      - name: Build the app without signing
+        run: flutter build ios --release --no-codesign
+
+      - name: Package the .ipa
+        run: |
+          mkdir -p Payload
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -qry GymMane-unsigned.ipa Payload
+
+      - name: Upload the .ipa
+        uses: actions/upload-artifact@v4
+        with:
+          name: GymMane-unsigned-ipa
+          path: GymMane-unsigned.ipa
+          retention-days: 14
