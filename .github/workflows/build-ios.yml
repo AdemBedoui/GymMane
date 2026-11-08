@@ -38,7 +38,15 @@ jobs:
           sed -i '' -E "s/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]+;/IPHONEOS_DEPLOYMENT_TARGET = ${IOS_TARGET};/g" ios/Runner.xcodeproj/project.pbxproj
           if [ -f ios/Podfile ]; then
             sed -i '' -E "s/^#? *platform :ios.*/platform :ios, '${IOS_TARGET}'/" ios/Podfile
+            perl -pi -e "s/^(\s*)flutter_additional_ios_build_settings\(target\)\s*$/\$1flutter_additional_ios_build_settings(target)\n\$1target.build_configurations.each { |c| c.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '${IOS_TARGET}' }\n/" ios/Podfile
+            grep -n -E "platform :ios|IPHONEOS_DEPLOYMENT_TARGET" ios/Podfile
           fi
+          # Flutter's framework package needs iOS 13; raise plugins that still declare less.
+          cache="${PUB_CACHE:-$HOME/.pub-cache}"
+          find "$cache/hosted" -name Package.swift -path '*/ios/*' -o -name Package.swift -path '*/darwin/*' | while read -r f; do
+            grep -H -E '\.iOS\(' "$f" || true
+            perl -pi -e 's/\.iOS\(\s*"(?:[0-9]|1[0-2])(?:\.[0-9]+)*"\s*\)/.iOS("13.0")/; s/\.iOS\(\s*\.v(?:[0-9]|1[0-2])(?:_[0-9]+)?\s*\)/.iOS("13.0")/' "$f"
+          done
 
       - name: Add privacy descriptions and the display name
         run: |
